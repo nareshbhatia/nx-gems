@@ -1,13 +1,16 @@
 {
   "name": "@nx-gems/express-app",
   "description": "Nx generator for Express applications",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Naresh Bhatia",
   "license": "MIT",
   "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/nareshbhatia/nx-gems.git"
+  },
+  "dependencies": {
+    "@nrwl/express": "^13.7.3"
   },
   "generators": "./generators.json",
   "executors": "./executors.json"
