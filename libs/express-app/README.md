@@ -17,7 +17,7 @@ Run the plugin to generate an api
 nx g @nx-gems/express-app:express-app test-api
 ```
 
-This will create an express app at `/apps/test-api` with a example route of `/accounts`.
+This will create an express app at `/apps/test-api` with an example route of `/accounts`.
 
 Execute the following command to run the express app:
 
@@ -25,7 +25,7 @@ Execute the following command to run the express app:
 nx serve test-api
 ```
 
-Now point your browser to http://localhost:33333/accounts to test the example route.
+Now point your browser to http://localhost:3333/accounts to test the example route.
 
 ## Running unit tests
 
