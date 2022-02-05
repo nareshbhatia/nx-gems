@@ -1,14 +1,24 @@
 import {
+  addDependenciesToPackageJson,
   addProjectConfiguration,
   formatFiles,
   generateFiles,
   getWorkspaceLayout,
+  installPackagesTask,
   names,
   offsetFromRoot,
   Tree,
+  updateJson,
 } from '@nrwl/devkit';
+import { applicationGenerator } from '@nrwl/express';
 import * as path from 'path';
 import { ExpressAppGeneratorSchema } from './schema';
+import {
+  corsTypingsVersion,
+  corsVersion,
+  morganTypingsVersion,
+  morganVersion,
+} from '../../utils/versions';
 
 interface NormalizedSchema extends ExpressAppGeneratorSchema {
   projectName: string;
@@ -17,22 +27,22 @@ interface NormalizedSchema extends ExpressAppGeneratorSchema {
   parsedTags: string[];
 }
 
-function normalizeOptions(
+function normalizeSchema(
   tree: Tree,
-  options: ExpressAppGeneratorSchema
+  schema: ExpressAppGeneratorSchema
 ): NormalizedSchema {
-  const name = names(options.name).fileName;
-  const projectDirectory = options.directory
-    ? `${names(options.directory).fileName}/${name}`
+  const name = names(schema.name).fileName;
+  const projectDirectory = schema.directory
+    ? `${names(schema.directory).fileName}/${name}`
     : name;
   const projectName = projectDirectory.replace(new RegExp('/', 'g'), '-');
-  const projectRoot = `${getWorkspaceLayout(tree).libsDir}/${projectDirectory}`;
-  const parsedTags = options.tags
-    ? options.tags.split(',').map((s) => s.trim())
+  const projectRoot = `${getWorkspaceLayout(tree).appsDir}/${projectDirectory}`;
+  const parsedTags = schema.tags
+    ? schema.tags.split(',').map((s) => s.trim())
     : [];
 
   return {
-    ...options,
+    ...schema,
     projectName,
     projectRoot,
     projectDirectory,
@@ -40,34 +50,69 @@ function normalizeOptions(
   };
 }
 
-function addFiles(tree: Tree, options: NormalizedSchema) {
-  const templateOptions = {
-    ...options,
-    ...names(options.name),
-    offsetFromRoot: offsetFromRoot(options.projectRoot),
-    template: '',
+function addFiles(tree: Tree, schema: NormalizedSchema) {
+  const substitutions = {
+    ...schema,
+    ...names(schema.name),
+    offsetFromRoot: offsetFromRoot(schema.projectRoot),
+    // remove __tmpl__ from file endings
+    tmpl: '',
   };
   generateFiles(
     tree,
     path.join(__dirname, 'files'),
-    options.projectRoot,
-    templateOptions
+    schema.projectRoot,
+    substitutions
   );
 }
 
-export default async function (tree: Tree, options: ExpressAppGeneratorSchema) {
-  const normalizedOptions = normalizeOptions(tree, options);
-  addProjectConfiguration(tree, normalizedOptions.projectName, {
-    root: normalizedOptions.projectRoot,
-    projectType: 'library',
-    sourceRoot: `${normalizedOptions.projectRoot}/src`,
-    targets: {
-      build: {
-        executor: '@nx-gems/express-app:build',
-      },
-    },
-    tags: normalizedOptions.parsedTags,
+function updateTsConfig(tree: Tree, schema: NormalizedSchema) {
+  updateJson(tree, path.join(schema.projectRoot, 'tsconfig.app.json'), (json) => {
+    json.compilerOptions.esModuleInterop = true;
+    json.compilerOptions.types = [...json.compilerOptions.types, 'cors', 'morgan'];
+    return json;
   });
-  addFiles(tree, normalizedOptions);
+}
+
+export default async function (tree: Tree, schema: ExpressAppGeneratorSchema) {
+  // generate express application
+  await applicationGenerator(tree, schema);
+
+  const normalizedSchema = normalizeSchema(tree, schema);
+  // addProjectConfiguration(tree, normalizedSchema.projectName, {
+  //   root: normalizedSchema.projectRoot,
+  //   projectType: 'library',
+  //   sourceRoot: `${normalizedSchema.projectRoot}/src`,
+  //   targets: {
+  //     build: {
+  //       executor: '@nx-gems/express-app:build',
+  //     },
+  //   },
+  //   tags: normalizedSchema.parsedTags,
+  // });
+
+  // generate files with substitutions
+  addFiles(tree, normalizedSchema);
+
+  // update tsconfig.app.json
+  updateTsConfig(tree, normalizedSchema);
+
+  // add dependencies
+  addDependenciesToPackageJson(
+    tree,
+    {
+      cors: corsVersion,
+      morgan: morganVersion,
+    },
+    {
+      '@types/cors': corsTypingsVersion,
+      '@types/morgan': morganTypingsVersion,
+    }
+  );
+
   await formatFiles(tree);
+
+  return () => {
+    installPackagesTask(tree);
+  };
 }
