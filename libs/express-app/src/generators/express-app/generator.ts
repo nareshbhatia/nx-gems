@@ -1,6 +1,5 @@
 import {
   addDependenciesToPackageJson,
-  addProjectConfiguration,
   formatFiles,
   generateFiles,
   getWorkspaceLayout,
@@ -79,18 +78,6 @@ export default async function (tree: Tree, schema: ExpressAppGeneratorSchema) {
   await applicationGenerator(tree, schema);
 
   const normalizedSchema = normalizeSchema(tree, schema);
-  // addProjectConfiguration(tree, normalizedSchema.projectName, {
-  //   root: normalizedSchema.projectRoot,
-  //   projectType: 'library',
-  //   sourceRoot: `${normalizedSchema.projectRoot}/src`,
-  //   targets: {
-  //     build: {
-  //       executor: '@nx-gems/express-app:build',
-  //     },
-  //   },
-  //   tags: normalizedSchema.parsedTags,
-  // });
-
   // generate files with substitutions
   addFiles(tree, normalizedSchema);
 

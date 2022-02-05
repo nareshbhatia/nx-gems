@@ -1,7 +1,6 @@
 # express-app
 
 Generator for Express applications and APIs.
-This library was generated with [Nx](https://nx.dev).
 
 ## Getting started
 
