@@ -5,10 +5,10 @@ This library was generated with [Nx](https://nx.dev).
 
 ## Getting started
 
-Install this plugin in your existing nx repo.
+Install the following packages to your existing nx repo.
 
 ```sh
-npm install --save-dev @nx-gems/express-app
+npm install --save-dev @nx-gems/express-app @nrwl/express
 ```
 
 Run the plugin to generate an api
