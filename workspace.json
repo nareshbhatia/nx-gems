@@ -1,4 +1,7 @@
 {
   "version": 2,
-  "projects": {}
+  "projects": {
+    "express-app": "libs/express-app",
+    "express-app-e2e": "apps/express-app-e2e"
+  }
 }

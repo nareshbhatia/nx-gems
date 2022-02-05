@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "name": "express-app",
+  "version": "0.0.1",
+  "generators": {
+    "express-app": {
+      "factory": "./src/generators/express-app/generator",
+      "schema": "./src/generators/express-app/schema.json",
+      "description": "express-app generator"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "root": "apps/express-app-e2e",
+  "projectType": "application",
+  "sourceRoot": "apps/express-app-e2e/src",
+  "targets": {
+    "e2e": {
+      "executor": "@nrwl/nx-plugin:e2e",
+      "options": {
+        "target": "express-app:build",
+        "jestConfig": "apps/express-app-e2e/jest.config.js"
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["express-app"]
+}

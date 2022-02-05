@@ -1,0 +1,56 @@
+{
+  "root": "libs/express-app",
+  "sourceRoot": "libs/express-app/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/express-app/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/express-app"],
+      "options": {
+        "jestConfig": "libs/express-app/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nrwl/node:package",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/express-app",
+        "tsConfig": "libs/express-app/tsconfig.lib.json",
+        "packageJson": "libs/express-app/package.json",
+        "main": "libs/express-app/src/index.ts",
+        "assets": [
+          "libs/express-app/*.md",
+          {
+            "input": "./libs/express-app/src",
+            "glob": "**/!(*.ts)",
+            "output": "./src"
+          },
+          {
+            "input": "./libs/express-app/src",
+            "glob": "**/*.d.ts",
+            "output": "./src"
+          },
+          {
+            "input": "./libs/express-app",
+            "glob": "generators.json",
+            "output": "."
+          },
+          {
+            "input": "./libs/express-app",
+            "glob": "executors.json",
+            "output": "."
+          }
+        ]
+      }
+    }
+  },
+  "tags": []
+}
